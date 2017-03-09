@@ -8,8 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <stack> //need this???
+#include <vector>
+#include "Scene.h"
 
-#define DEG_TO_RADIAN 0.017453293
+Scene * scene;
 
 // Set up rendering context
 SDL_Window * setupRC(SDL_GLContext &context) {
@@ -43,7 +45,10 @@ SDL_Window * setupRC(SDL_GLContext &context) {
 }
 
 void init() {
+	//std::vector<char *> textures;
+	//std::vector<char *> meshes;
 
+	scene = new Scene("phong-tex.vert", "phong-tex.frag", "fabric.bmp", "cube.obj");
 }
 
 void update() {
@@ -51,7 +56,14 @@ void update() {
 }
 
 void draw(SDL_Window * hWindow) {
+	// clear the screen
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//render scene
+	scene->renderScene();
+
+	SDL_GL_SwapWindow(hWindow); // swap buffers
 }
 
 int main(int argc, char *argv[]) {
@@ -83,5 +95,6 @@ int main(int argc, char *argv[]) {
 	SDL_GL_DeleteContext(glContext);
 	SDL_DestroyWindow(hWindow);
 	SDL_Quit();
+	delete scene;
 	return 0;
 }

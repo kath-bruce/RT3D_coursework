@@ -6,11 +6,12 @@
 #include <vector>
 #include <stack>
 #include "rt3d.h"
+#include "rt3dObjLoader.h"
 #include "GameObject.h"
 
 class Renderer {
 public:
-	Renderer(char * vertName, char * fragName, std::vector<char *> textures);
+	Renderer(char * vertName, char * fragName, std::vector<char *> textures, std::vector<char *> meshNames);
 	void render(std::vector<GameObject> gameObjs);
 	void addTexture(char * fName);
 	void addMesh(char * fName);
@@ -20,6 +21,7 @@ private:
 	std::vector<GLuint> textures;
 	std::vector<GLuint> meshes;
 	std::stack<glm::mat4> mvStack;
+	GLuint loadBitmap(char * fName);
 };
 
 #endif

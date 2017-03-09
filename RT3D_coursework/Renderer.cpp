@@ -1,17 +1,43 @@
 #include "Renderer.h"
 
-Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> textureNames)
+Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames)
 {
 	shaderProg = rt3d::initShaders(vertName, fragName);
 
 	for (char * tex : textureNames) {
 		addTexture(tex);
 	}
+
+	for (char * mesh : meshNames) {
+		addMesh(mesh);
+	}
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_DEPTH_TEST); // enable depth testing
+
 }
 
 void Renderer::addTexture(char * fName)
 {
-	textures.push_back(loadBi)
+	textures.push_back(loadBitmap(fName));
+}
+
+void Renderer::addMesh(char * fName)
+{
+	std::vector<GLfloat> verts;
+	std::vector<GLfloat> norms;
+	std::vector<GLfloat> tex_coords;
+	std::vector<GLuint> indices;
+	rt3d::loadObj(fName, verts, norms, tex_coords, indices);
+	GLuint meshIndexCount = indices.size();
+
+	meshes.push_back(rt3d::createMesh(verts.size() / 3,
+		verts.data(), nullptr, norms.data(),
+		tex_coords.data(), meshIndexCount,
+		indices.data()));
+
 }
 
 // A simple texture loading function

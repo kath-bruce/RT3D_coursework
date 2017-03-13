@@ -32,18 +32,18 @@ layout(location = 0) out vec4 out_Color;
 void main(void) {
     
 	// Ambient intensity
-	vec4 ambientI = light.ambient * material.ambient;
+	vec4 ambientI = light.ambient;
 
 	// Diffuse intensity
-	vec4 diffuseI = light.diffuse * material.diffuse;
+	vec4 diffuseI = light.diffuse;
 	diffuseI = diffuseI * max(dot(normalize(ex_N),normalize(ex_L)),0);
 
 	// Specular intensity
 	// Calculate R - reflection of light
 	vec3 R = normalize(reflect(normalize(-ex_L),normalize(ex_N)));
 
-	vec4 specularI = light.specular * material.specular;
-	specularI = specularI * pow(max(dot(R,ex_V),0), material.shininess);
+	vec4 specularI = light.specular;
+	specularI = specularI * max(dot(R,ex_V),0);
 
 	// Fragment colour
 	out_Color = (ambientI + diffuseI + specularI) * texture(textureUnit0, ex_TexCoord);

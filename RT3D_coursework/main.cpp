@@ -48,7 +48,7 @@ void init() {
 	//std::vector<char *> textures;
 	//std::vector<char *> meshes;
 
-	scene = new Scene("phong-tex.vert", "phong-tex.frag", "fabric.bmp", "cube.obj");
+	scene = new Scene("phong-tex.vert", "phong-tex.frag", "camouflage.bmp", "cube.obj");
 }
 
 void update() {

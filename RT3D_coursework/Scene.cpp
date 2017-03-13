@@ -16,6 +16,9 @@ Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshNa
 	initGameObjects(textureName, meshName);
 	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(textureName), renderer->getMesh(meshName));
+
+	int blorp = 1;
+	blorp = 2;
 }
 
 void Scene::initLights()

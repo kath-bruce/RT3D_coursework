@@ -56,17 +56,18 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 	// set up projection matrix
 	glm::mat4 projection(1.0);
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 50.0f);
-	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
+	
 
 	setCamera(eye, at, up, *player);
 
-	glUseProgram(shaderProg);
 	renderSkyBox(projection);
 
-
+	
 	//glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
 	//rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
 
+	glUseProgram(shaderProg);
+	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
 	for (auto gObj : gameObjs) {
 		renderObject(gObj);
 	}
@@ -85,15 +86,18 @@ void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObjec
 
 void Renderer::renderObject(GameObject obj)
 {
+	/*glActiveTexture(GL_TEXTURE0);
+	glUniform1i(glGetUniformLocation(shaderProg, "textureUnit0"), 0);*/
 	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
-	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
 	mvStack.top() = glm::rotate(mvStack.top(), float(obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
+	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
 	rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	//
 	mvStack.pop();
 }
 
@@ -247,6 +251,7 @@ void Renderer::renderSkyBox(glm::mat4 projection)
 	glCullFace(GL_BACK); // drawing inside of cube!
 						 // back to remainder of rendering
 	glDepthMask(GL_TRUE); // make sure depth test is on
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	/*
 	glUseProgram(skyBoxProg);				// skybox as single cube using cube map
 	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));

@@ -30,6 +30,9 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="md2model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -48,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="anorms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md2model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -70,6 +79,9 @@
     <None Include="phong.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="yoshi.md2">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="camouflage.bmp">
@@ -88,6 +100,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="tile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="yoshi.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

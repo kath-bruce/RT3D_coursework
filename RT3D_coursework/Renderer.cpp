@@ -56,13 +56,13 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 	// set up projection matrix
 	glm::mat4 projection(1.0);
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 50.0f);
-	
+
 
 	setCamera(eye, at, up, *player);
 
 	renderSkyBox(projection);
 
-	
+
 	//glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
 	//rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
 
@@ -109,17 +109,28 @@ void Renderer::addTexture(char * fName)
 
 void Renderer::addMesh(char * fName)
 {
-	std::vector<GLfloat> verts;
-	std::vector<GLfloat> norms;
-	std::vector<GLfloat> tex_coords;
-	std::vector<GLuint> indices;
-	rt3d::loadObj(fName, verts, norms, tex_coords, indices);
-	GLuint meshIndexCount = indices.size();
 
-	meshes.push_back(Mesh(rt3d::createMesh(verts.size() / 3,
-		verts.data(), nullptr, norms.data(),
-		tex_coords.data(), meshIndexCount,
-		indices.data()), meshIndexCount, fName));
+	std::string tmpStr(fName);
+
+	int strLength = tmpStr.length();
+
+	if (tmpStr.substr(strLength - 3, strLength) == "md2")
+	{
+		md2model tmpModel;
+		meshes.push_back(Mesh(tmpModel.ReadMD2Model(fName), tmpModel.getVertDataCount(), fName));
+	}
+	else {
+		std::vector<GLfloat> verts;
+		std::vector<GLfloat> norms;
+		std::vector<GLfloat> tex_coords;
+		std::vector<GLuint> indices;
+		rt3d::loadObj(fName, verts, norms, tex_coords, indices);
+		GLuint meshIndexCount = indices.size();
+		meshes.push_back(Mesh(rt3d::createMesh(verts.size() / 3,
+			verts.data(), nullptr, norms.data(),
+			tex_coords.data(), meshIndexCount,
+			indices.data()), meshIndexCount, fName));
+	}
 
 	/*meshes.insert({ fName, std::make_pair(rt3d::createMesh(verts.size() / 3,
 		verts.data(), nullptr, norms.data(),
@@ -256,7 +267,7 @@ void Renderer::renderSkyBox(glm::mat4 projection)
 	glUseProgram(skyBoxProg);				// skybox as single cube using cube map
 	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
 	glUseProgram(skyBoxProg);
-	glDepthMask(GL_FALSE); // make sure writing to update depth test is off	
+	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
 	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
 	glm::mat3 mvRotOnlyMat3 = glm::mat3(mvStack.top());
 	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
@@ -285,3 +296,4 @@ void Renderer::renderSkyBox(glm::mat4 projection)
 	glDepthMask(GL_TRUE); // make sure depth test is on
 	*/
 }
+

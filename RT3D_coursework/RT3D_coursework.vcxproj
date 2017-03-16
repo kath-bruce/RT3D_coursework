@@ -168,6 +168,8 @@
     <None Include="cubeMap.vert" />
     <None Include="phong-tex.frag" />
     <None Include="phong-tex.vert" />
+    <None Include="phong.frag" />
+    <None Include="phong.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="camouflage.bmp" />

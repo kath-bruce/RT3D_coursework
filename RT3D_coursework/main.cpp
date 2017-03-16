@@ -48,11 +48,17 @@ void init() {
 	//std::vector<char *> textures;
 	//std::vector<char *> meshes;
 
-	scene = new Scene("phong-tex.vert", "phong-tex.frag", "camouflage.bmp", "cube.obj");
+	scene = new Scene("phong-tex.vert", "phong-tex.frag", "camouflage.bmp", "cube.obj", "yoshi.bmp", "yoshi.md2");
 }
 
 void update() {
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
+	if (keys[SDL_SCANCODE_W])  scene->movePlayerForward(0.1f);
+	if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);
+	if (keys[SDL_SCANCODE_A]) scene->movePlayerRight(-0.1f);
+	if (keys[SDL_SCANCODE_D]) scene->movePlayerRight(0.1f);
+	//if (keys[SDL_SCANCODE_ESCAPE] )
 }
 
 void draw(SDL_Window * hWindow) {
@@ -85,8 +91,22 @@ int main(int argc, char *argv[]) {
 	SDL_Event sdlEvent;  // variable to detect SDL events
 	while (running) {	// the event loop
 		while (SDL_PollEvent(&sdlEvent)) {
-			if (sdlEvent.type == SDL_QUIT || sdlEvent.key.keysym.sym == SDLK_ESCAPE)
+			if (sdlEvent.type == SDL_QUIT || /*sdlEvent.type == SDLK_ESCAPE*/ sdlEvent.type == SDL_KEYDOWN && sdlEvent.key.keysym.sym == SDLK_ESCAPE) 
+			{
 				running = false;
+			}
+
+			if (sdlEvent.type == SDL_MOUSEMOTION)
+			{
+				SDL_SetRelativeMouseMode(SDL_TRUE);
+				SDL_WarpMouseInWindow(NULL, 800, 600);
+				/* If the mouse is moving to the left */
+				if (sdlEvent.motion.xrel < 0)
+					scene->updatePlayerR(-1.5f);
+				/* If the mouse is moving to the right */
+				else if (sdlEvent.motion.xrel > 0)
+					scene->updatePlayerR(1.5f);
+			}
 		}
 		update();
 		draw(hWindow); // call the draw function

@@ -8,8 +8,8 @@
 
 class Scene {
 public:
-	Scene(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames);
-	Scene(char * vertName, char * fragName, char * textureName, char * meshName);
+	Scene(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames, char * playerTex, char * playerMesh);
+	Scene(char * vertName, char * fragName, char * textureName, char * meshName, char * playerTex, char * playerMesh);
 	~Scene() { delete renderer; delete player; }
 	void addGameObject(GameObject gameObj);
 	void addGameObject(char * name, glm::vec3 pos, glm::vec3 scale, char * textureName, char * meshName);
@@ -17,6 +17,11 @@ public:
 	void addGameObjects(char * name, glm::vec3 pos, glm::vec3 scale, char * textureName, 
 		char * meshName, int copies, float diffX, float diffY, float diffZ);
 	void renderScene();
+	void updatePlayerR(GLfloat deltaR);
+	void movePlayerForward(GLfloat delta);
+	void movePlayerRight(GLfloat delta);
+	double getTimeScalar();
+	void idleAnimation();
 private:
 	Renderer * renderer;
 	glm::vec3 eye{0.0f, 1.0f, 4.0f};
@@ -32,6 +37,8 @@ private:
 	void initLights();
 	void initGameObjects(char * tex, char * mesh);
 	GameObject getGameObject(char * gName);
+	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
+	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
 };
 
 #endif

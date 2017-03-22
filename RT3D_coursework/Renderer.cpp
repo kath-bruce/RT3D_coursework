@@ -56,22 +56,24 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 	// set up projection matrix
 	glm::mat4 projection(1.0);
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 50.0f);
-	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
+
 
 	setCamera(eye, at, up, *player);
 
-	glUseProgram(shaderProg);
 	renderSkyBox(projection);
 
 
 	//glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
 	//rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
 
+	glUseProgram(shaderProg);
+	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
 	for (auto gObj : gameObjs) {
 		renderObject(gObj);
 	}
 
-	renderObject(*player);
+	//renderObject(*player);
+	renderPlayer(*player);
 }
 
 void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObject &player)
@@ -85,15 +87,43 @@ void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObjec
 
 void Renderer::renderObject(GameObject obj)
 {
+	/*glActiveTexture(GL_TEXTURE0);
+	glUniform1i(glGetUniformLocation(shaderProg, "textureUnit0"), 0);*/
 	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
 	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
 	mvStack.top() = glm::rotate(mvStack.top(), float(obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
-	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
-	rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+
+
+	//Not sure if best way to handle this is to create seperate renderPlayer method?? Try and find a better way?
+	//if (obj.getName() == "player")
+	//{
+	//	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	//}
+	//else {
+		rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	//}
+	mvStack.pop();
+}
+
+void Renderer::renderPlayer(GameObject obj) {
+	tmpModel.Animate(obj.getCurrentAnim(), 0.1);
+	rt3d::updateMesh(obj.getMesh().getMeshId(), RT3D_VERTEX, tmpModel.getAnimVerts(), tmpModel.getVertDataSize());
+	
+	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
+	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
+	mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), float(90 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
+	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
+
+	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 	mvStack.pop();
 }
 
@@ -105,17 +135,29 @@ void Renderer::addTexture(char * fName)
 
 void Renderer::addMesh(char * fName)
 {
-	std::vector<GLfloat> verts;
-	std::vector<GLfloat> norms;
-	std::vector<GLfloat> tex_coords;
-	std::vector<GLuint> indices;
-	rt3d::loadObj(fName, verts, norms, tex_coords, indices);
-	GLuint meshIndexCount = indices.size();
 
-	meshes.push_back(Mesh(rt3d::createMesh(verts.size() / 3,
-		verts.data(), nullptr, norms.data(),
-		tex_coords.data(), meshIndexCount,
-		indices.data()), meshIndexCount, fName));
+	std::string tmpStr(fName);
+
+	int strLength = tmpStr.length();
+
+	if (tmpStr.substr(strLength - 3, strLength) == "md2")
+	{
+		//md2model tmpModel;
+		GLuint temp = tmpModel.ReadMD2Model(fName);
+		meshes.push_back(Mesh(temp, tmpModel.getVertDataCount(), fName));
+	}
+	else {
+		std::vector<GLfloat> verts;
+		std::vector<GLfloat> norms;
+		std::vector<GLfloat> tex_coords;
+		std::vector<GLuint> indices;
+		rt3d::loadObj(fName, verts, norms, tex_coords, indices);
+		GLuint meshIndexCount = indices.size();
+		meshes.push_back(Mesh(rt3d::createMesh(verts.size() / 3,
+			verts.data(), nullptr, norms.data(),
+			tex_coords.data(), meshIndexCount,
+			indices.data()), meshIndexCount, fName));
+	}
 
 	/*meshes.insert({ fName, std::make_pair(rt3d::createMesh(verts.size() / 3,
 		verts.data(), nullptr, norms.data(),
@@ -247,36 +289,6 @@ void Renderer::renderSkyBox(glm::mat4 projection)
 	glCullFace(GL_BACK); // drawing inside of cube!
 						 // back to remainder of rendering
 	glDepthMask(GL_TRUE); // make sure depth test is on
-	/*
-	glUseProgram(skyBoxProg);				// skybox as single cube using cube map
-	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
-	glUseProgram(skyBoxProg);
-	glDepthMask(GL_FALSE); // make sure writing to update depth test is off	
-	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
-	glm::mat3 mvRotOnlyMat3 = glm::mat3(mvStack.top());
-	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
-	mvStack.push(glm::mat4(mvRotOnlyMat3));
-	/*glm::mat3*//* mvRotOnlyMat3 = glm::mat3(mvStack.top());
-	glCullFace(GL_FRONT); // drawing inside of cube!
-	mvStack.push(glm::mat4(mvRotOnlyMat3));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
-	glCullFace(GL_FRONT); // drawing inside of cube!
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.5f, 1.5f, 1.5f));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
-	rt3d::setUniformMatrix4fv(skyBoxProg, "modelview", glm::value_ptr(mvStack.top()));
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.5f, 1.5f, 1.5f));
-	Mesh cubeMesh = getMesh("cube.obj");
-	rt3d::drawIndexedMesh(cubeMesh.getMeshId(), cubeMesh.getMeshIndexCount(), GL_TRIANGLES);
-	rt3d::setUniformMatrix4fv(skyBoxProg, "modelview", glm::value_ptr(mvStack.top()));
-	mvStack.pop();
-	//Mesh cubeMesh = getMesh("cube.obj");
-	rt3d::drawIndexedMesh(cubeMesh.getMeshId(), cubeMesh.getMeshIndexCount(), GL_TRIANGLES);
-	glCullFace(GL_BACK); // drawing inside of cube!
-	mvStack.pop();
-	// back to remainder of rendering
-	glCullFace(GL_BACK); // drawing inside of cube!
-
-						 //glDepthMask(GL_TRUE); // make sure depth test is on									 // back to remainder of rendering
-	glDepthMask(GL_TRUE); // make sure depth test is on
-	*/
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
+

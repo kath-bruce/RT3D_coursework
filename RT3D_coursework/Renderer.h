@@ -11,6 +11,7 @@
 #include "rt3d.h"
 #include "rt3dObjLoader.h"
 #include "GameObject.h"
+#include "md2model.h"
 
 #define DEG_TO_RADIAN 0.017453293
 
@@ -40,7 +41,9 @@ private:
 	//GLuint getMeshIndexCount(GameObject gObj);
 	void renderSkyBox(glm::mat4 projection);
 	void renderObject(GameObject obj);
+	void renderPlayer(GameObject obj);
 	void setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObject &player);
+	md2model tmpModel;
 };
 
 #endif

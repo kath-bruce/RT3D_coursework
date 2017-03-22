@@ -1,21 +1,25 @@
 #include "Scene.h"
 
-Scene::Scene(char * vertName, char * fragName, std::vector<char*> textureNames, std::vector<char*> meshNames)
+Scene::Scene(char * vertName, char * fragName, std::vector<char*> textureNames, std::vector<char*> meshNames, char * playerTex, char * playerMesh)
 {
 	renderer = new Renderer(vertName, fragName, textureNames, meshNames);
+	renderer->addTexture(playerTex);
+	renderer->addMesh(playerMesh);
 	initLights();
 	initGameObjects(textureNames[0], meshNames[0]);
 	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f), 
-		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(textureNames[0]), renderer->getMesh(meshNames[0]));
+		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
-Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshName)
+Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshName, char * playerTex, char * playerMesh)
 {
 	renderer = new Renderer(vertName, fragName, textureName, meshName);
+	renderer->addTexture(playerTex);
+	renderer->addMesh(playerMesh);
 	initLights();
 	initGameObjects(textureName, meshName);
 	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(textureName), renderer->getMesh(meshName));
+		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
 void Scene::initLights()
@@ -85,5 +89,59 @@ void Scene::renderScene()
 
 	renderer->render(gameObjects, eye, at, up, player);
 
+}
+
+void Scene::updatePlayerR(GLfloat deltaR)
+{
+	player->setRotation(player->getRotation() + deltaR);
+}
+
+void Scene::movePlayerForward(GLfloat delta) {
+
+	glm::vec3 temp = player->getPos();
+
+	player->setPos(moveForward(player->getPos(), player->getRotation(), delta / getTimeScalar()));
+
+	player->currentAnim = 1;
+}
+
+void Scene::movePlayerRight(GLfloat delta) {
+
+	glm::vec3 temp = player->getPos();
+
+	player->setPos(moveRight(player->getPos(), player->getRotation(), delta / getTimeScalar()));
+
+	player->currentAnim = 1;
+}
+
+glm::vec3 Scene::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
+{
+	return glm::vec3(pos.x + d*std::sin(angle*DEG_TO_RADIAN), pos.y, pos.z - d*std::cos(angle*DEG_TO_RADIAN));
+}
+
+glm::vec3 Scene::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
+{
+	return glm::vec3(pos.x + d*std::cos(angle*DEG_TO_RADIAN), pos.y, pos.z + d*std::sin(angle*DEG_TO_RADIAN));
+}
+
+
+double Scene::getTimeScalar() {
+	static unsigned int lastTicks = 0;
+
+	int ticks = SDL_GetTicks();
+	int ticksSince = ticks - lastTicks;
+
+	double scalar = (double)ticksSince / (double) 60.0f;
+
+	lastTicks = ticks;
+
+	if (scalar < 0.2 || scalar > 1.0)
+		scalar = 0.28333;
+
+	return scalar;
+}
+
+void Scene::idleAnimation() {
+	player->currentAnim = 0;
 }
 

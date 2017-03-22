@@ -21,6 +21,7 @@ public:
 	void movePlayerForward(GLfloat delta);
 	void movePlayerRight(GLfloat delta);
 	double getTimeScalar();
+	void idleAnimation();
 private:
 	Renderer * renderer;
 	glm::vec3 eye{0.0f, 1.0f, 4.0f};

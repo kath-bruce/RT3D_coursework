@@ -8,7 +8,7 @@ Scene::Scene(char * vertName, char * fragName, std::vector<char*> textureNames, 
 	initLights();
 	initGameObjects(textureNames[0], meshNames[0]);
 	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f), 
-		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
+		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
 Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshName, char * playerTex, char * playerMesh)
@@ -19,7 +19,7 @@ Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshNa
 	initLights();
 	initGameObjects(textureName, meshName);
 	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
+		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
 void Scene::initLights()

@@ -103,7 +103,7 @@ GLuint md2model::ReadMD2Model (const char *filename)
 	FILE *fp;
 	int i;
 
-	fopen_s (&fp, filename, "rb");
+	fp = fopen ( filename, "rb");
 	if (!fp)
 	{
 		fprintf (stderr, "Error: couldn't open \"%s\"!\n", filename);

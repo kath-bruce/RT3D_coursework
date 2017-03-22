@@ -102,6 +102,7 @@ void Scene::movePlayerForward(GLfloat delta) {
 
 	player->setPos(moveForward(player->getPos(), player->getRotation(), delta / getTimeScalar()));
 
+	player->currentAnim = 1;
 }
 
 void Scene::movePlayerRight(GLfloat delta) {
@@ -110,6 +111,7 @@ void Scene::movePlayerRight(GLfloat delta) {
 
 	player->setPos(moveRight(player->getPos(), player->getRotation(), delta / getTimeScalar()));
 
+	player->currentAnim = 1;
 }
 
 glm::vec3 Scene::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
@@ -137,5 +139,9 @@ double Scene::getTimeScalar() {
 		scalar = 0.28333;
 
 	return scalar;
+}
+
+void Scene::idleAnimation() {
+	player->currentAnim = 0;
 }
 

@@ -19,7 +19,7 @@ class Renderer {
 public:
 	Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames);
 	Renderer(char * vertName, char * fragName, char * textureName, char * meshName);
-	//~Renderer() {};
+	//~Renderer() { delete this; };
 	void render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player);
 	void addTexture(char * fName);
 	void addMesh(char * fName);

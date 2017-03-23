@@ -97,7 +97,7 @@ void Renderer::renderObject(GameObject obj)
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
 
-	if (obj.getName() == "player")
+	if (obj.getName() == "player" || obj.getName() == "fox")
 	{
 		rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 	}
@@ -272,37 +272,5 @@ void Renderer::renderSkyBox(glm::mat4 projection)
 						 // back to remainder of rendering
 	glDepthMask(GL_TRUE); // make sure depth test is on
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	/*
-	glUseProgram(skyBoxProg);				// skybox as single cube using cube map
-	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
-	glUseProgram(skyBoxProg);
-	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
-	rt3d::setUniformMatrix4fv(skyBoxProg, "projection", glm::value_ptr(projection));
-	glm::mat3 mvRotOnlyMat3 = glm::mat3(mvStack.top());
-	glDepthMask(GL_FALSE); // make sure writing to update depth test is off
-	mvStack.push(glm::mat4(mvRotOnlyMat3));
-	/*glm::mat3*//* mvRotOnlyMat3 = glm::mat3(mvStack.top());
-	glCullFace(GL_FRONT); // drawing inside of cube!
-	mvStack.push(glm::mat4(mvRotOnlyMat3));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
-	glCullFace(GL_FRONT); // drawing inside of cube!
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.5f, 1.5f, 1.5f));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox[0]);
-	rt3d::setUniformMatrix4fv(skyBoxProg, "modelview", glm::value_ptr(mvStack.top()));
-	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(1.5f, 1.5f, 1.5f));
-	Mesh cubeMesh = getMesh("cube.obj");
-	rt3d::drawIndexedMesh(cubeMesh.getMeshId(), cubeMesh.getMeshIndexCount(), GL_TRIANGLES);
-	rt3d::setUniformMatrix4fv(skyBoxProg, "modelview", glm::value_ptr(mvStack.top()));
-	mvStack.pop();
-	//Mesh cubeMesh = getMesh("cube.obj");
-	rt3d::drawIndexedMesh(cubeMesh.getMeshId(), cubeMesh.getMeshIndexCount(), GL_TRIANGLES);
-	glCullFace(GL_BACK); // drawing inside of cube!
-	mvStack.pop();
-	// back to remainder of rendering
-	glCullFace(GL_BACK); // drawing inside of cube!
-
-						 //glDepthMask(GL_TRUE); // make sure depth test is on									 // back to remainder of rendering
-	glDepthMask(GL_TRUE); // make sure depth test is on
-	*/
 }
 

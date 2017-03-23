@@ -22,7 +22,7 @@ public:
 		lastColl = "";
 		rot = 0.0f;
 	}
-	~GameObject() {};
+	//~GameObject() { delete this; };
 	char * getName() { return name; }
 	glm::vec3 getPos() { return pos; }
 	void setPos(glm::vec3 nPos) { pos = nPos; }

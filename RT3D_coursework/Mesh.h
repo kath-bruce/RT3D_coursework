@@ -11,7 +11,7 @@ public:
 		meshIndexCount = mIndexCount;
 		meshName = mName;
 	}
-	~Mesh() {};
+	//~Mesh() { delete this; };
 	Mesh() { meshId = -1; meshIndexCount = -1; meshName = '\0'; } //should never be used
 	GLuint getMeshId() { return meshId; }
 	GLuint getMeshIndexCount() { return meshIndexCount; }

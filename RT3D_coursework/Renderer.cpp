@@ -72,7 +72,8 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 		renderObject(gObj);
 	}
 
-	renderObject(*player);
+	//renderObject(*player);
+	renderPlayer(*player);
 }
 
 void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObject &player)
@@ -97,15 +98,32 @@ void Renderer::renderObject(GameObject obj)
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
 
-	if (obj.getName() == "player" || obj.getName() == "fox")
-	{
-		rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
-	}
-	else {
-		rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
-	}
 
-	//
+	//Not sure if best way to handle this is to create seperate renderPlayer method?? Try and find a better way?
+	//if (obj.getName() == "player")
+	//{
+	//	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	//}
+	//else {
+		rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	//}
+	mvStack.pop();
+}
+
+void Renderer::renderPlayer(GameObject obj) {
+	tmpModel.Animate(obj.getCurrentAnim(), 0.1);
+	rt3d::updateMesh(obj.getMesh().getMeshId(), RT3D_VERTEX, tmpModel.getAnimVerts(), tmpModel.getVertDataSize());
+	
+	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
+	mvStack.push(mvStack.top());
+	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
+	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
+	mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
+	mvStack.top() = glm::rotate(mvStack.top(), float(90 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
+	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
+
+	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 	mvStack.pop();
 }
 
@@ -124,7 +142,7 @@ void Renderer::addMesh(char * fName)
 
 	if (tmpStr.substr(strLength - 3, strLength) == "md2")
 	{
-		md2model tmpModel;
+		//md2model tmpModel;
 		GLuint temp = tmpModel.ReadMD2Model(fName);
 		meshes.push_back(Mesh(temp, tmpModel.getVertDataCount(), fName));
 	}

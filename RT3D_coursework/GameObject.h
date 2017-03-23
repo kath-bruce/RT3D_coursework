@@ -34,6 +34,8 @@ public:
 	void reset() { pos = startPos; lastColl = ""; }
 	GLfloat getRotation() { return rot; }
 	void setRotation(GLfloat nRot) { rot = nRot; }
+	int getCurrentAnim() { return currentAnim; }
+	int currentAnim = 0;
 private:
 	GLuint texture;
 	//GLuint mesh;

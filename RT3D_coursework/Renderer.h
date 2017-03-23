@@ -30,6 +30,7 @@ public:
 private:
 	GLuint shaderProg;
 	GLuint skyBoxProg;
+	GLuint skybox[5];
 	//std::vector<GLuint> textures;
 	//std::vector<GLuint> meshes;
 	std::unordered_map<char *, GLuint> textures;
@@ -38,6 +39,7 @@ private:
 	std::stack<glm::mat4> mvStack;
 	GLuint loadBitmap(char * fName);
 	GLuint loadCubeMap(const char *fname[6], GLuint *texID);
+	void loadSkybox();
 	//GLuint getMeshIndexCount(GameObject gObj);
 	void renderSkyBox(glm::mat4 projection);
 	void renderObject(GameObject obj);

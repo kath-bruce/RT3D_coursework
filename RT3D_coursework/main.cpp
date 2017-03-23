@@ -52,7 +52,6 @@ void init() {
 	textures.push_back("fox.bmp");
 	meshes.push_back("cube.obj");
 	meshes.push_back("house.obj");
-	meshes.push_back("foxOriginal.md2");
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2");
 

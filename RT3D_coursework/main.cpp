@@ -47,15 +47,22 @@ SDL_Window * setupRC(SDL_GLContext &context) {
 void init() {
 	std::vector<char *> textures;
 	std::vector<char *> meshes;
-	textures.push_back("camouflage.bmp");
+	textures.push_back("floor_tiles.bmp");
 	textures.push_back("fabric.bmp");
+	textures.push_back("brick.bmp");
 	textures.push_back("fox.bmp");
+	textures.push_back("building.bmp");
 	meshes.push_back("cube.obj");
-	meshes.push_back("house.obj");
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2");
 
-	scene->addGameObject("house", glm::vec3(2.0f, 3.0f, -4.0f), glm::vec3(0.05f, 0.05f, 0.05f), "fabric.bmp", "house.obj");
+	
+	scene->addGameObject("wall", glm::vec3(10.0f, 3.0f, 109.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall2", glm::vec3(10.0f, 3.0f, -89.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall3", glm::vec3(110.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall4", glm::vec3(-89.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("building", glm::vec3(50.0f, 40.1f, 50.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
+	scene->addGameObject("building2", glm::vec3(-45.0f, 40.1f, -45.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
 }
 
 void update() {

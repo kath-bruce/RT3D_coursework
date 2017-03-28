@@ -105,5 +105,17 @@
     <Image Include="yoshi.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="houseTex.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="brick.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="floor_tiles.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="building.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

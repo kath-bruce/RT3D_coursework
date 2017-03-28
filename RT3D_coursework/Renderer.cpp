@@ -13,6 +13,8 @@ Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> texture
 		addMesh(mesh);
 	}
 
+	loadSkybox();
+
 	glm::mat4 modelView(1.0);
 	mvStack.push(modelView);
 
@@ -41,6 +43,8 @@ Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * 
 
 	addMesh(meshName);
 
+	loadSkybox();
+
 	glm::mat4 modelView(1.0);
 	mvStack.push(modelView);
 
@@ -49,6 +53,16 @@ Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST); // enable depth testing
 	//
+}
+
+void Renderer::loadSkybox() {
+	const char *cubeTexFiles[6] = {
+		"Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
+	};
+	/*GLuint skybox[5];*/
+	//GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
+
+	loadCubeMap(cubeTexFiles, &skybox[0]);
 }
 
 void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player)
@@ -265,13 +279,13 @@ GLuint Renderer::loadCubeMap(const char * fname[6], GLuint * texID)
 
 void Renderer::renderSkyBox(glm::mat4 projection)
 {
-	const char *cubeTexFiles[6] = {
-		"Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
-	};
-	GLuint skybox[5];
-	//GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
+	//const char *cubeTexFiles[6] = {
+	//	"Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
+	//};
+	//GLuint skybox[5];
+	////GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
 
-	loadCubeMap(cubeTexFiles, &skybox[0]);
+	//loadCubeMap(cubeTexFiles, &skybox[0]);
 
 	// skybox as single cube using cube map
 	glUseProgram(skyBoxProg);

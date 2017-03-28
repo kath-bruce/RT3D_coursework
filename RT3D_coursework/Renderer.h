@@ -19,7 +19,7 @@ class Renderer {
 public:
 	Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames);
 	Renderer(char * vertName, char * fragName, char * textureName, char * meshName);
-	//~Renderer() {};
+	//~Renderer() { delete this; };
 	void render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player);
 	void addTexture(char * fName);
 	void addMesh(char * fName);
@@ -30,6 +30,7 @@ public:
 private:
 	GLuint shaderProg;
 	GLuint skyBoxProg;
+	GLuint skybox[5];
 	//std::vector<GLuint> textures;
 	//std::vector<GLuint> meshes;
 	std::unordered_map<char *, GLuint> textures;
@@ -38,6 +39,7 @@ private:
 	std::stack<glm::mat4> mvStack;
 	GLuint loadBitmap(char * fName);
 	GLuint loadCubeMap(const char *fname[6], GLuint *texID);
+	void loadSkybox();
 	//GLuint getMeshIndexCount(GameObject gObj);
 	void renderSkyBox(glm::mat4 projection);
 	void renderObject(GameObject obj);

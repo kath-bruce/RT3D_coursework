@@ -275,8 +275,8 @@ void Scene::initSounds() {
 	audio.push_back(loadAudio("Yoshi's Island Medley.wav"));
 	//http://www.smashcustommusic.com/71268
 
-	audio.push_back(loadAudio(""));
-	//source of audio
+	audio.push_back(loadAudio("yoshi_tongue.wav"));
+	//http://www.zedge.net/ringtone/1124379/
 
 	HCHANNEL ch = BASS_SampleGetChannel(audio[0], FALSE);
 	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
@@ -290,4 +290,18 @@ void Scene::playBackgroundMusic() {
 	HCHANNEL ch = BASS_SampleGetChannel(audio[0], TRUE); //todo true i think??
 	if (!BASS_ChannelPlay(ch, TRUE))
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
+}
+
+void Scene::playCollisionAudio() {
+	if (player->getLastCollision().substr(0,11) == "collectable") {
+
+		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 0.5);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, -1);
+
+		if (!BASS_ChannelPlay(ch, FALSE))
+			std::cout << "Can't play sample" << std::endl;
+
+	}
 }

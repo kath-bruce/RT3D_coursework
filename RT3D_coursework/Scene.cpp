@@ -35,7 +35,7 @@ void Scene::initLights()
 
 void Scene::initGameObjects(char * tex, char * mesh)
 {
-	gameObjects.push_back(GameObject("ground", glm::vec3(10.0f, -0.1f, 10.0f), glm::vec3(20.0f, 0.1f, 20.0f), renderer->getTexture(tex), renderer->getMesh(mesh)));
+	gameObjects.push_back(GameObject("ground", glm::vec3(10.0f, -0.1f, 10.0f), glm::vec3(100.0f, 0.1f, 100.0f), renderer->getTexture(tex), renderer->getMesh(mesh)));
 }
 
 GameObject Scene::getGameObject(char * gName)

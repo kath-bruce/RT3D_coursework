@@ -288,17 +288,18 @@ void Scene::initSounds() {
 
 void Scene::playBackgroundMusic() {
 	HCHANNEL ch = BASS_SampleGetChannel(audio[0], TRUE); //todo true i think??
+	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 0.5);
 	if (!BASS_ChannelPlay(ch, TRUE))
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
 }
 
 void Scene::playCollisionAudio() {
 	if (player->getLastCollision().substr(0,11) == "collectable") {
-
+		std::cout << "play collision audio was called" << std::endl;
 		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
-		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
-		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 0.5);
-		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, -1);
+		//BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
+		//BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, -1);
 
 		if (!BASS_ChannelPlay(ch, FALSE))
 			std::cout << "Can't play sample" << std::endl;

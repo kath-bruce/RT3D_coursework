@@ -230,7 +230,14 @@ void Scene::checkCollectableCollision() {
 				player->setLastCollision("");
 				gameObjects.erase(gameObjects.begin() + index);
 				collectables--;
+				//Audio played on collision
+				HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
+				BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
+
+				if (!BASS_ChannelPlay(ch, FALSE))
+					std::cout << "Can't play sample" << std::endl;
 				break;
+				
 			}
 		}
 	}
@@ -293,7 +300,8 @@ void Scene::playBackgroundMusic() {
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
 }
 
-void Scene::playCollisionAudio() {
+//Not needed anymore
+/*void Scene::playCollisionAudio() {
 	if (player->getLastCollision().substr(0,11) == "collectable") {
 		std::cout << "play collision audio was called" << std::endl;
 		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
@@ -305,4 +313,4 @@ void Scene::playCollisionAudio() {
 			std::cout << "Can't play sample" << std::endl;
 
 	}
-}
+}8?

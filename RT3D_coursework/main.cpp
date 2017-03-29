@@ -47,22 +47,54 @@ SDL_Window * setupRC(SDL_GLContext &context) {
 void init() {
 	std::vector<char *> textures;
 	std::vector<char *> meshes;
-	textures.push_back("camouflage.bmp");
+
+	textures.push_back("floor_tiles.bmp");
+	textures.push_back("apple.bmp");
 	textures.push_back("fabric.bmp");
+	textures.push_back("brick.bmp");
 	textures.push_back("fox.bmp");
+	textures.push_back("building.bmp");
 	meshes.push_back("cube.obj");
-	meshes.push_back("house.obj");
+	meshes.push_back("Apple.obj");
 
-	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2");
+	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2", "MavenPro-Regular.ttf");
 
-	scene->addGameObject("house", glm::vec3(2.0f, 3.0f, -4.0f), glm::vec3(0.05f, 0.05f, 0.05f), "fabric.bmp", "house.obj");
+	
+	scene->addGameObject("wall", glm::vec3(10.0f, 3.0f, 109.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall2", glm::vec3(10.0f, 3.0f, -89.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall3", glm::vec3(110.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("wall4", glm::vec3(-89.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
+	scene->addGameObject("building", glm::vec3(50.0f, 40.1f, 50.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
+	scene->addGameObject("building2", glm::vec3(-45.0f, 40.1f, -45.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
+
+	for (int b = 0; b < 10; b++) {
+		std::string collectableId("collectable");
+		
+		collectableId.append(std::to_string(b + 1));
+
+		int randomNum1;
+		int randomNum2;
+
+		if (b < 4) {
+			randomNum1 = -rand() % 50 + 1;
+			randomNum2 = rand() % 50 + 1;
+		}
+		else {
+			randomNum1 = rand() % 50 + 1;
+			randomNum2 = -rand() % 50 + 1;
+		}
+
+		scene->addGameObject(collectableId, glm::vec3(randomNum1, 2.0f, randomNum2), glm::vec3(0.5f, 0.5f, 0.5f), "apple.bmp", "Apple.obj");
+	}
+
 }
 
 void update() {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
+	scene->updateLight();
+	scene->updateCollectables();
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_D]) {
-		if (keys[SDL_SCANCODE_W]) { scene->movePlayerForward(0.1f); };
+		if (keys[SDL_SCANCODE_W]) scene->movePlayerForward(0.1f); 
 		if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);
 		if (keys[SDL_SCANCODE_A]) scene->movePlayerRight(-0.1f);
 		if (keys[SDL_SCANCODE_D]) scene->movePlayerRight(0.1f);
@@ -70,6 +102,13 @@ void update() {
 	}
 	else {
 		scene->idleAnimation();
+	}
+
+	if (scene->isGameWon()) {
+		if (keys[SDL_SCANCODE_R]) {
+			delete scene;
+			init();
+		}
 	}
 }
 

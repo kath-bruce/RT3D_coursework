@@ -1,9 +1,10 @@
 #include "Renderer.h"
 
-Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames)
+Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames, char * ttfName)
 {
 	shaderProg = rt3d::initShaders(vertName, fragName);
 	skyBoxProg = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
+	textProg = rt3d::initShaders("textured.vert", "textured.frag");
 
 	for (char * tex : textureNames) {
 		addTexture(tex);
@@ -18,35 +19,7 @@ Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> texture
 	glm::mat4 modelView(1.0);
 	mvStack.push(modelView);
 
-	//below could be in main
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST); // enable depth testing
-	//
-}
-
-Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * meshName)
-{
-	shaderProg = rt3d::initShaders(vertName, fragName);
-	skyBoxProg = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
-
-	//rt3d::lightStruct light = {
-	//	{ 0.3f, 0.3f, 0.3f, 1.0f }, // ambient
-	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // diffuse
-	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // specular
-	//	{ -10.0f, 10.0f, 10.0f, 1.0f }  // position
-	//};
-
-	//rt3d::setLight(shaderProg, light); 
-
-	addTexture(textureName);
-
-	addMesh(meshName);
-
-	loadSkybox();
-
-	glm::mat4 modelView(1.0);
-	mvStack.push(modelView);
+	initTTF(ttfName);
 
 	//below could be in main
 	glEnable(GL_BLEND);
@@ -54,10 +27,50 @@ Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * 
 	glEnable(GL_DEPTH_TEST); // enable depth testing
 	//
 }
+
+void Renderer::initTTF(char * ttfName) {
+	// set up TrueType / SDL_ttf
+	if (TTF_Init() == -1)
+		std::cout << "TTF failed to initialise." << std::endl;
+
+	textFont = TTF_OpenFont(ttfName, 24);
+	if (textFont == NULL)
+		std::cout << "Failed to open font." << std::endl;
+}
+
+//Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * meshName)
+//{
+//	shaderProg = rt3d::initShaders(vertName, fragName);
+//	skyBoxProg = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
+//
+//	//rt3d::lightStruct light = {
+//	//	{ 0.3f, 0.3f, 0.3f, 1.0f }, // ambient
+//	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // diffuse
+//	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // specular
+//	//	{ -10.0f, 10.0f, 10.0f, 1.0f }  // position
+//	//};
+//
+//	//rt3d::setLight(shaderProg, light); 
+//
+//	addTexture(textureName);
+//
+//	addMesh(meshName);
+//
+//	loadSkybox();
+//
+//	glm::mat4 modelView(1.0);
+//	mvStack.push(modelView);
+//
+//	//below could be in main
+//	glEnable(GL_BLEND);
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	glEnable(GL_DEPTH_TEST); // enable depth testing
+//	//
+//}
 
 void Renderer::loadSkybox() {
 	const char *cubeTexFiles[6] = {
-		"Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
+		"Town-skybox/Town_bk.bmp", "Town-skybox/Town_rt.bmp", "Town-skybox/Town_ft.bmp", "Town-skybox/Town_lf.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
 	};
 	/*GLuint skybox[5];*/
 	//GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
@@ -65,29 +78,82 @@ void Renderer::loadSkybox() {
 	loadCubeMap(cubeTexFiles, &skybox[0]);
 }
 
-void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player)
+void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player, std::vector<HUDObject> hud, rt3d::lightStruct mainLight)
 {
 	// set up projection matrix
 	glm::mat4 projection(1.0);
-	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 50.0f);
+	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 200.0f);
 
 
 	setCamera(eye, at, up, *player);
 
 	renderSkyBox(projection);
 
-
 	//glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
 	//rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
 
 	glUseProgram(shaderProg);
+
+	rt3d::setLight(shaderProg, mainLight); // set in scene
+	glm::vec4 temp = mvStack.top() * glm::vec4( 0.0f, 2.0f, -6.0f, 1.0f );
+	rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
+
 	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
 	for (auto gObj : gameObjs) {
 		renderObject(gObj);
 	}
 
-	//renderObject(*player);
 	renderPlayer(*player);
+
+	if (hud.size() > 0)
+	{
+		glUseProgram(textProg);
+		for (HUDObject hudObj: hud)
+			renderHUD(hudObj);
+	}
+}
+
+void Renderer::renderHUD(HUDObject hudObj) {
+	GLuint label = 0;
+	label = textToTexture(hudObj.getDisplay().c_str(), label);
+
+	glBindTexture(GL_TEXTURE_2D, label);
+
+	mvStack.push(glm::mat4(1.0));
+	mvStack.top() = glm::translate(mvStack.top(), hudObj.getPos());
+	mvStack.top() = glm::scale(mvStack.top(), hudObj.getScale());
+	rt3d::setUniformMatrix4fv(textProg, "projection", glm::value_ptr(glm::mat4(1.0)));
+	rt3d::setUniformMatrix4fv(textProg, "modelview", glm::value_ptr(mvStack.top()));
+
+	Mesh textMesh = getMesh("cube.obj");
+	rt3d::drawIndexedMesh(textMesh.getMeshId(), textMesh.getMeshIndexCount(), GL_TRIANGLES);
+	mvStack.pop();
+}
+
+GLuint Renderer::textToTexture(const char * str, GLuint textID) {
+	GLuint texture = textID;
+	TTF_Font * font = textFont;
+
+	SDL_Surface * stringImage = TTF_RenderText_Blended(font, str, { 255, 255, 255 });
+
+	if (stringImage == NULL) {
+		std::cout << "String surface not created." << std::endl;
+	}
+
+	if (texture == 0) {
+		glGenTextures(1, &texture);//This avoids memory leakage, only initialise //first time
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stringImage->w, stringImage->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, stringImage->pixels);
+	glBindTexture(GL_TEXTURE_2D, NULL);
+
+	SDL_FreeSurface(stringImage);
+	return texture;
 }
 
 void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObject &player)
@@ -101,37 +167,30 @@ void Renderer::setCamera(glm::vec3 &eye, glm::vec3 &at, glm::vec3 &up, GameObjec
 
 void Renderer::renderObject(GameObject obj)
 {
-	/*glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(shaderProg, "textureUnit0"), 0);*/
 	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
 	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
+
 	mvStack.top() = glm::rotate(mvStack.top(), float(obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(180 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
+
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
 
+	rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 
-	//Not sure if best way to handle this is to create seperate renderPlayer method?? Try and find a better way?
-	//if (obj.getName() == "player")
-	//{
-	//	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
-	//}
-	//else {
-		rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
-	//}
 	mvStack.pop();
 }
 
 void Renderer::renderPlayer(GameObject obj) {
 	tmpModel.Animate(obj.getCurrentAnim(), 0.1);
 	rt3d::updateMesh(obj.getMesh().getMeshId(), RT3D_VERTEX, tmpModel.getAnimVerts(), tmpModel.getVertDataSize());
-	
+
 	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
-	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(obj.getScale().x / 20, obj.getScale().y / 20, obj.getScale().z / 20));
 	mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(90 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));

@@ -260,7 +260,13 @@ double Scene::getTimeScalar() {
 }
 
 void Scene::idleAnimation() {
-	player->currentAnim = 0;
+	if (Scene::isGameWon()) {
+		player->currentAnim = 11;
+	}
+	else {
+		player->currentAnim = 0;
+	}
+
 }
 
 HSAMPLE Scene::loadAudio(char * filename) {
@@ -299,7 +305,6 @@ void Scene::playBackgroundMusic() {
 	if (!BASS_ChannelPlay(ch, TRUE))
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
 }
-
 //Not needed anymore
 /*void Scene::playCollisionAudio() {
 	if (player->getLastCollision().substr(0,11) == "collectable") {

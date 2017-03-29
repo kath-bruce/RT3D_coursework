@@ -119,7 +119,7 @@ void Renderer::renderObject(GameObject obj)
 	//	rt3d::drawMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 	//}
 	//else {
-		rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
+	rt3d::drawIndexedMesh(obj.getMesh().getMeshId(), obj.getMesh().getMeshIndexCount(), GL_TRIANGLES);
 	//}
 	mvStack.pop();
 }
@@ -127,11 +127,11 @@ void Renderer::renderObject(GameObject obj)
 void Renderer::renderPlayer(GameObject obj) {
 	tmpModel.Animate(obj.getCurrentAnim(), 0.1);
 	rt3d::updateMesh(obj.getMesh().getMeshId(), RT3D_VERTEX, tmpModel.getAnimVerts(), tmpModel.getVertDataSize());
-	
+
 	glBindTexture(GL_TEXTURE_2D, obj.getTexture());
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
-	mvStack.top() = glm::scale(mvStack.top(), obj.getScale());
+	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(obj.getScale().x/20, obj.getScale().y/20, obj.getScale().z/20));
 	mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(90 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));

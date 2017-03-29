@@ -3,6 +3,7 @@
 #define SCENE_H
 
 #include "Renderer.h"
+#include "CollisionDetector.h"
 #include <vector>
 #include <unordered_map>
 
@@ -16,6 +17,7 @@ public:
 	void addGameObjects(GameObject gameObj, int copies, float diffX, float diffY, float diffZ);
 	void addGameObjects(char * name, glm::vec3 pos, glm::vec3 scale, char * textureName, 
 		char * meshName, int copies, float diffX, float diffY, float diffZ);
+	void updateLight();
 	void renderScene();
 	void updatePlayerR(GLfloat deltaR);
 	void movePlayerForward(GLfloat delta);
@@ -27,18 +29,18 @@ private:
 	glm::vec3 eye{0.0f, 1.0f, 4.0f};
 	glm::vec3 at{ 0.0f, 1.0f, 3.0f };
 	glm::vec3 up{ 0.0f, 1.0f, 0.0f };
-	//glm::vec3(10.0f, -0.1f, 10.0f); //ground
 	std::vector<GameObject> gameObjects;
 	GameObject * player;
-	//std::unordered_map<char *, GameObject> gameObjects;
 	std::unordered_map<char *, rt3d::lightStruct> lights;
 	glm::vec4 lightPos;
+	bool night = false;
 	std::unordered_map<char *, rt3d::materialStruct> materials;
 	void initLights();
 	void initGameObjects(char * tex, char * mesh);
 	GameObject getGameObject(char * gName);
 	glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d);
 	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d);
+	bool checkCollisions();
 };
 
 #endif

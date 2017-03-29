@@ -7,8 +7,8 @@ Scene::Scene(char * vertName, char * fragName, std::vector<char*> textureNames, 
 	renderer->addMesh(playerMesh);
 	initLights();
 	initGameObjects(textureNames[0], meshNames[0]);
-	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f), 
-		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
+	player = new GameObject("player", glm::vec3(8.0f, 1.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
 Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshName, char * playerTex, char * playerMesh)
@@ -18,8 +18,8 @@ Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshNa
 	renderer->addMesh(playerMesh);
 	initLights();
 	initGameObjects(textureName, meshName);
-	player = new GameObject("player", glm::vec3(0.0f, 1.0f, -4.0f),
-		glm::vec3(0.05f, 0.05f, 0.05f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
+	player = new GameObject("player", glm::vec3(8.0f, 1.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
 void Scene::initLights()
@@ -81,6 +81,35 @@ void Scene::addGameObjects(char * name, glm::vec3 pos, glm::vec3 scale, char * t
 	}
 }
 
+void Scene::updateLight() {
+
+	if (night) {
+		lights.at("mainLight").ambient[0] += 0.001f;
+		lights.at("mainLight").ambient[1] += 0.001f;
+		lights.at("mainLight").ambient[2] += 0.001f;
+	}
+	else {
+		lights.at("mainLight").ambient[0] -= 0.001f;
+		lights.at("mainLight").ambient[1] -= 0.001f;
+		lights.at("mainLight").ambient[2] -= 0.001f;
+	}
+
+	if (lights.at("mainLight").ambient[0] <= -0.25
+		&& lights.at("mainLight").ambient[1] <= -0.25
+		&& lights.at("mainLight").ambient[2] <= -0.25)
+		night = true;
+	else if (lights.at("mainLight").ambient[0] >= 0.2
+		&& lights.at("mainLight").ambient[1] >= 0.2
+		&& lights.at("mainLight").ambient[2] >= 0.2)
+		night = false;
+
+	//std::cout << lights.at("mainLight").ambient[0] << std::endl;
+
+	//std::cout << lights.at("mainLight").ambient[1] << std::endl;
+
+	//std::cout << lights.at("mainLight").ambient[2] << std::endl;
+}
+
 void Scene::renderScene()
 {
 	rt3d::setLight(renderer->getShader(), lights.at("mainLight")); // set in scene
@@ -89,6 +118,15 @@ void Scene::renderScene()
 
 	renderer->render(gameObjects, eye, at, up, player);
 
+}
+
+bool Scene::checkCollisions() {
+	bool collided = false;
+	for (int i = 0; i < gameObjects.size(); i++) {
+		if (CollisionDetector::detectCollision(gameObjects[i], *player))
+			collided = true;
+	}
+	return collided;
 }
 
 void Scene::updatePlayerR(GLfloat deltaR)
@@ -102,6 +140,9 @@ void Scene::movePlayerForward(GLfloat delta) {
 
 	player->setPos(moveForward(player->getPos(), player->getRotation(), delta / getTimeScalar()));
 
+	if (checkCollisions())
+		player->setPos(temp);
+
 	player->currentAnim = 1;
 }
 
@@ -110,6 +151,9 @@ void Scene::movePlayerRight(GLfloat delta) {
 	glm::vec3 temp = player->getPos();
 
 	player->setPos(moveRight(player->getPos(), player->getRotation(), delta / getTimeScalar()));
+
+	if (checkCollisions())
+		player->setPos(temp);
 
 	player->currentAnim = 1;
 }

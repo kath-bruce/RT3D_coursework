@@ -22,7 +22,6 @@ public:
 		lastColl = "";
 		rot = 0.0f;
 	}
-	//~GameObject() { delete this; };
 	char * getName() { return name; }
 	glm::vec3 getPos() { return pos; }
 	void setPos(glm::vec3 nPos) { pos = nPos; }
@@ -38,23 +37,13 @@ public:
 	int currentAnim = 0;
 private:
 	GLuint texture;
-	//GLuint mesh;
 	Mesh mesh;
 	glm::vec3 pos;
 	glm::vec3 startPos;
-	glm::vec3 scale;
+	glm::vec3 scale; //could add separate scale members for rendering and collision
 	char * name;
 	char * lastColl;
 	GLfloat rot;
-	glm::vec3 moveForward(glm::vec3 cam, GLfloat angle, GLfloat d) {
-		return glm::vec3(cam.x + d*std::sin(angle*DEG_TO_RADIAN),
-			cam.y, cam.z - d*std::cos(angle*DEG_TO_RADIAN));
-	}
-
-	glm::vec3 moveRight(glm::vec3 pos, GLfloat angle, GLfloat d) {
-		return glm::vec3(pos.x + d*std::cos(angle*DEG_TO_RADIAN),
-			pos.y, pos.z + d*std::sin(angle*DEG_TO_RADIAN));
-	}
 };
 
 #endif

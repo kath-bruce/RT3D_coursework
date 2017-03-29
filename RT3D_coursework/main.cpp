@@ -47,20 +47,22 @@ SDL_Window * setupRC(SDL_GLContext &context) {
 void init() {
 	std::vector<char *> textures;
 	std::vector<char *> meshes;
+
 	textures.push_back("camouflage.bmp");
 	textures.push_back("fabric.bmp");
 	textures.push_back("fox.bmp");
+
 	meshes.push_back("cube.obj");
 	meshes.push_back("house.obj");
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2");
 
-	scene->addGameObject("house", glm::vec3(2.0f, 3.0f, -4.0f), glm::vec3(0.05f, 0.05f, 0.05f), "fabric.bmp", "house.obj");
+	scene->addGameObject("house", glm::vec3(2.0f, 3.0f, -4.0f), glm::vec3(5.0f, 5.0f, 5.0f), "fabric.bmp", "house.obj");
 }
 
 void update() {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
+	scene->updateLight();
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_D]) {
 		if (keys[SDL_SCANCODE_W]) { scene->movePlayerForward(0.1f); };
 		if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);

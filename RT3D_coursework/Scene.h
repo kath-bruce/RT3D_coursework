@@ -30,7 +30,7 @@ public:
 	HSAMPLE loadAudio(char * filename);
 	void initSounds();
 	void playBackgroundMusic();
-	void playCollisionAudio();
+	//void playCollisionAudio();
 	bool isGameWon() { return gameWon; }
 private:
 	Renderer * renderer;

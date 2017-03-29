@@ -59,7 +59,7 @@ void init() {
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2", "MavenPro-Regular.ttf");
 
-	
+	scene->initSounds();
 	scene->addGameObject("wall", glm::vec3(10.0f, 3.0f, 109.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("wall2", glm::vec3(10.0f, 3.0f, -89.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("wall3", glm::vec3(110.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");

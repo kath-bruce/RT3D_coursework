@@ -65,6 +65,9 @@
     <ClInclude Include="CollisionDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HUDObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="phong-tex.frag">
@@ -86,6 +89,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="yoshi.md2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="textured.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="textured.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

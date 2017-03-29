@@ -14,6 +14,8 @@ bool CollisionDetector::detectCollision(GameObject &objA, GameObject &objB)
 				objA.setLastCollision(objB.getName());
 				objB.setLastCollision(objA.getName());
 
+				//std::cout << "collided with " << objA.getName() << "\n";
+
 				return true;
 			}
 		}

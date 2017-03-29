@@ -12,7 +12,7 @@
 
 class GameObject {
 public:
-	GameObject(char * nName, glm::vec3 nPos, glm::vec3 nScale, GLuint texId, Mesh meshId) {
+	GameObject(std::string nName, glm::vec3 nPos, glm::vec3 nScale, GLuint texId, Mesh meshId) {
 		name = nName;
 		pos = nPos;
 		startPos = nPos;
@@ -22,14 +22,14 @@ public:
 		lastColl = "";
 		rot = 0.0f;
 	}
-	char * getName() { return name; }
+	std::string getName() { return name; }
 	glm::vec3 getPos() { return pos; }
 	void setPos(glm::vec3 nPos) { pos = nPos; }
 	glm::vec3 getScale() { return scale; }
 	GLuint getTexture() { return texture; }
 	Mesh getMesh() { return mesh; }
-	char * getLastCollision() { return lastColl; }
-	void setLastCollision(char * lastCollision) { lastColl = lastCollision; }
+	std::string getLastCollision() { return lastColl; }
+	void setLastCollision(std::string lastCollision) { lastColl = lastCollision; }
 	void reset() { pos = startPos; lastColl = ""; }
 	GLfloat getRotation() { return rot; }
 	void setRotation(GLfloat nRot) { rot = nRot; }
@@ -41,8 +41,8 @@ private:
 	glm::vec3 pos;
 	glm::vec3 startPos;
 	glm::vec3 scale; //could add separate scale members for rendering and collision
-	char * name;
-	char * lastColl;
+	std::string name;
+	std::string lastColl;
 	GLfloat rot;
 };
 

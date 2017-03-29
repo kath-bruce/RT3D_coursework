@@ -93,6 +93,7 @@ void update() {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	scene->updateLight();
 	scene->updateCollectables();
+	scene->playBackgroundMusic();
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_D]) {
 		if (keys[SDL_SCANCODE_W]) scene->movePlayerForward(0.1f); 
 		if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);

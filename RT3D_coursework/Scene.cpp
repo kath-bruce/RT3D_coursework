@@ -256,3 +256,38 @@ void Scene::idleAnimation() {
 	player->currentAnim = 0;
 }
 
+HSAMPLE Scene::loadAudio(char * filename) {
+	HSAMPLE sam;
+	if (sam = BASS_SampleLoad(FALSE, filename, 0, 0, 3, BASS_SAMPLE_OVER_POS))
+		std::cout << "sample " << filename << " loaded!" << std::endl;
+	else
+	{
+		std::cout << "Can't load sample";
+		exit(0);
+	}
+	return sam;
+}
+
+void Scene::initSounds() {
+	if (!BASS_Init(-1, 44100, 0, 0, NULL))
+		std::cout << "Can't Inialize device";
+
+	audio.push_back(loadAudio("Yoshi's Island Medley.wav"));
+	//http://www.smashcustommusic.com/71268
+
+	audio.push_back(loadAudio(""));
+	//source of audio
+
+	HCHANNEL ch = BASS_SampleGetChannel(audio[0], FALSE);
+	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
+	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 0.5);
+	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, -1);
+	int flag = BASS_ChannelFlags(ch, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP);
+	std::cout << flag << std::endl;
+}
+
+void Scene::playBackgroundMusic() {
+	HCHANNEL ch = BASS_SampleGetChannel(audio[0], TRUE); //todo true i think??
+	if (!BASS_ChannelPlay(ch, TRUE))
+		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
+}

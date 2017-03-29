@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "CollisionDetector.h"
 #include "HUDObject.h"
+#include "bass.h"
 #include <vector>
 #include <unordered_map>
 
@@ -26,6 +27,10 @@ public:
 	void movePlayerRight(GLfloat delta);
 	double getTimeScalar();
 	void idleAnimation();
+	HSAMPLE loadAudio(char * filename);
+	void initSounds();
+	void playBackgroundMusic();
+	void playCollisionAudio();
 	bool isGameWon() { return gameWon; }
 private:
 	Renderer * renderer;
@@ -49,6 +54,8 @@ private:
 	void checkCollectableCollision();
 	bool checkCollisions();
 	int getGameObjectIndex(std::string objName);
+	std::vector<HSAMPLE> audio;
+
 };
 
 #endif

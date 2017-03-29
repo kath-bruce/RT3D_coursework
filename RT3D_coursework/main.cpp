@@ -59,7 +59,9 @@ void init() {
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2", "MavenPro-Regular.ttf");
 
-	
+	scene->initSounds();
+	//scene->playBackgroundMusic();
+
 	scene->addGameObject("wall", glm::vec3(10.0f, 3.0f, 109.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("wall2", glm::vec3(10.0f, 3.0f, -89.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("wall3", glm::vec3(110.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
@@ -93,6 +95,7 @@ void update() {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	scene->updateLight();
 	scene->updateCollectables();
+	scene->playCollisionAudio();
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_D]) {
 		if (keys[SDL_SCANCODE_W]) scene->movePlayerForward(0.1f); 
 		if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);
@@ -137,7 +140,7 @@ int main(int argc, char *argv[]) {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	init();
-
+	scene->playBackgroundMusic();
 	bool running = true; // set running to true
 	SDL_Event sdlEvent;  // variable to detect SDL events
 	while (running) {	// the event loop

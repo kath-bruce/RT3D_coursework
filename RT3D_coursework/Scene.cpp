@@ -213,6 +213,7 @@ void Scene::idleAnimation() {
 	else {
 		player->setCurrentAnim(0);
 	}
+
 }
 
 HSAMPLE Scene::loadAudio(char * filename) {
@@ -256,6 +257,7 @@ void Scene::updateCar()
 {
 	int carIndex = getGameObjectIndex("car");
 	glm::vec3 newCarPos = gameObjects[carIndex].getPos();
+
 
 	if ((newCarPos.x - gameObjects[carIndex].getLastPos().x) >= 0) {
 		newCarPos.x += 0.1f;

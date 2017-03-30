@@ -11,17 +11,6 @@ Scene::Scene(char * vertName, char * fragName, std::vector<char*> textureNames, 
 		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
 }
 
-//Scene::Scene(char * vertName, char * fragName, char * textureName, char * meshName, char * playerTex, char * playerMesh)
-//{
-//	renderer = new Renderer(vertName, fragName, textureName, meshName);
-//	renderer->addTexture(playerTex);
-//	renderer->addMesh(playerMesh);
-//	initLights();
-//	initGameObjects(textureName, meshName);
-//	player = new GameObject("player", glm::vec3(8.0f, 1.0f, 0.0f),
-//		glm::vec3(1.0f, 1.0f, 1.0f), renderer->getTexture(playerTex), renderer->getMesh(playerMesh));
-//}
-
 void Scene::initLights()
 {
 	lights.insert({ "mainLight",{
@@ -44,7 +33,6 @@ GameObject Scene::getGameObject(std::string gName)
 		if (gObj.getName() == gName)
 			return gObj;
 	}
-	//return GameObject("null", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0, 0);
 }
 
 void Scene::addGameObject(GameObject gameObj)
@@ -63,33 +51,9 @@ void Scene::addGameObject(std::string name, glm::vec3 pos, glm::vec3 scale, char
 	gameObjects.push_back(GameObject(name, pos, scale, texture, mesh));
 
 	std::string nameStr = name;
-	if (nameStr.substr(0,11) == "collectable")
+	if (nameStr.substr(0, 11) == "collectable")
 		collectables++;
 }
-
-//below might not be needed
-//void Scene::addGameObjects(GameObject gameObj, int copies, float diffX, float diffY, float diffZ)
-//{
-//	for (int i = 0; i < copies; i++) {
-//		gameObj.setPos(glm::vec3(gameObj.getPos().x + (i * diffX), 
-//			gameObj.getPos().y + (i * diffY), gameObj.getPos().z + (i * diffZ)));
-//		gameObjects.push_back(gameObj);
-//	}
-//}
-//
-////below might not be needed
-//void Scene::addGameObjects(std::string name, glm::vec3 pos, glm::vec3 scale, char * textureName, char * meshName, int copies, float diffX, float diffY, float diffZ)
-//{
-//	GLuint texture = renderer->getTexture(textureName);
-//	Mesh mesh = renderer->getMesh(meshName);
-//	GameObject gameObj(name, pos, scale, texture, mesh);
-//
-//	for (int i = 0; i < copies; i++) {
-//		gameObj.setPos(glm::vec3(gameObj.getPos().x + (i * diffX),
-//			gameObj.getPos().y + (i * diffY), gameObj.getPos().z + (i * diffZ)));
-//		gameObjects.push_back(gameObj);
-//	}
-//}
 
 int Scene::getGameObjectIndex(std::string objName) {
 	for (int i = 0; i < gameObjects.size(); i++) {
@@ -112,20 +76,14 @@ void Scene::updateLight() {
 		lights.at("mainLight").ambient[2] -= 0.001f;
 	}
 
-	if (lights.at("mainLight").ambient[0] <= -0.25
-		&& lights.at("mainLight").ambient[1] <= -0.25
-		&& lights.at("mainLight").ambient[2] <= -0.25)
+	if (lights.at("mainLight").ambient[0] <= 0.0
+		&& lights.at("mainLight").ambient[1] <= 0.0
+		&& lights.at("mainLight").ambient[2] <= 0.0)
 		night = true;
-	else if (lights.at("mainLight").ambient[0] >= 0.25
-		&& lights.at("mainLight").ambient[1] >= 0.25
-		&& lights.at("mainLight").ambient[2] >= 0.25)
+	else if (lights.at("mainLight").ambient[0] >= 0.35
+		&& lights.at("mainLight").ambient[1] >= 0.35
+		&& lights.at("mainLight").ambient[2] >= 0.35)
 		night = false;
-
-	//std::cout << lights.at("mainLight").ambient[0] << std::endl;
-
-	//std::cout << lights.at("mainLight").ambient[1] << std::endl;
-
-	//std::cout << lights.at("mainLight").ambient[2] << std::endl;
 }
 
 void Scene::updateCollectables()
@@ -145,18 +103,14 @@ void Scene::updateCollectables()
 
 void Scene::renderScene()
 {
-	//rt3d::setLight(renderer->getShader(), lights.at("mainLight")); // set in scene
-	//glm::vec4 temp = renderer->getStackTop() * lightPos;
-	//rt3d::setLightPos(renderer->getShader(), glm::value_ptr(temp));
-
 	if (!gameWon) {
 		std::string collectablesStr("Collectables left: ");
 		collectablesStr.append(std::to_string(collectables));
 		hud.push_back(HUDObject(glm::vec3(-0.5f, -0.8f, 0.0f), glm::vec3(0.5f, 0.2f, 0.0f), collectablesStr));
 	}
 	else {
-		hud.push_back(HUDObject(glm::vec3(0.0f, 0.1f, 0.0f), glm::vec3(0.25f, 0.25f, 0.0f), "You WON!"));
-		hud.push_back(HUDObject(glm::vec3(0.0f, -0.3f, 0.0f), glm::vec3(0.5f, 0.25f, 0.0f), "Press R to restart"));
+		hud.push_back(HUDObject(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.25f, 0.25f, 0.0f), "You WON!"));
+		hud.push_back(HUDObject(glm::vec3(0.0f, -0.6f, 0.0f), glm::vec3(0.5f, 0.25f, 0.0f), "Press R to restart"));
 	}
 
 	renderer->render(gameObjects, eye, at, up, player, hud, lights.at("mainLight"));
@@ -192,7 +146,7 @@ void Scene::movePlayerForward(GLfloat delta) {
 		checkCollectableCollision();
 	}
 
-	player->currentAnim = 1;
+	player->setCurrentAnim(1);
 }
 
 void Scene::movePlayerRight(GLfloat delta) {
@@ -206,7 +160,7 @@ void Scene::movePlayerRight(GLfloat delta) {
 		checkCollectableCollision();
 	}
 
-	player->currentAnim = 1;
+	player->setCurrentAnim(1);
 }
 
 glm::vec3 Scene::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
@@ -222,24 +176,17 @@ glm::vec3 Scene::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
 void Scene::checkCollectableCollision() {
 	std::string playerColl = player->getLastCollision();
 	if (playerColl.substr(0, 11) == "collectable") {
+		std::cout << "player collided with collectable\n";
+		int index = getGameObjectIndex(player->getLastCollision());
+		player->setLastCollision("");
+		gameObjects.erase(gameObjects.begin() + index);
+		collectables--;
+		//Audio played on collision
+		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
+		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
 
-		for (GameObject gObj : gameObjects) {
-			if (gObj.getName() == playerColl) {
-				std::cout << "player collided with collectable\n";
-				int index = getGameObjectIndex(player->getLastCollision());
-				player->setLastCollision("");
-				gameObjects.erase(gameObjects.begin() + index);
-				collectables--;
-				//Audio played on collision
-				HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
-				BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
-
-				if (!BASS_ChannelPlay(ch, FALSE))
-					std::cout << "Can't play sample" << std::endl;
-				break;
-				
-			}
-		}
+		if (!BASS_ChannelPlay(ch, FALSE))
+			std::cout << "Can't play sample" << std::endl;
 	}
 }
 
@@ -260,7 +207,12 @@ double Scene::getTimeScalar() {
 }
 
 void Scene::idleAnimation() {
-	player->currentAnim = 0;
+	if (gameWon) {
+		player->setCurrentAnim(10); //yoshi could dance instead - 8
+	}
+	else {
+		player->setCurrentAnim(0);
+	}
 }
 
 HSAMPLE Scene::loadAudio(char * filename) {
@@ -300,17 +252,34 @@ void Scene::playBackgroundMusic() {
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
 }
 
-//Not needed anymore
-/*void Scene::playCollisionAudio() {
-	if (player->getLastCollision().substr(0,11) == "collectable") {
-		std::cout << "play collision audio was called" << std::endl;
-		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
-		//BASS_ChannelSetAttribute(ch, BASS_ATTRIB_FREQ, 0);
-		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
-		//BASS_ChannelSetAttribute(ch, BASS_ATTRIB_PAN, -1);
+void Scene::updateCar()
+{
+	int carIndex = getGameObjectIndex("car");
+	glm::vec3 newCarPos = gameObjects[carIndex].getPos();
 
-		if (!BASS_ChannelPlay(ch, FALSE))
-			std::cout << "Can't play sample" << std::endl;
+	if ((newCarPos.x - gameObjects[carIndex].getLastPos().x) >= 0) {
+		newCarPos.x += 0.1f;
 
+		if (gameObjects[carIndex].getRotation() != 270.0f)
+			gameObjects[carIndex].setRotation(270.0f);
+
+		if (newCarPos.x >= 50.0f) {
+			newCarPos.x -= 0.2f;
+		}
 	}
-}*/
+	else {
+		newCarPos.x -= 0.1f;
+
+		if (gameObjects[carIndex].getRotation() != 90.0f)
+			gameObjects[carIndex].setRotation(90.0f);
+
+		if (newCarPos.x <= -50.0f) {
+			newCarPos.x += 0.2f;
+		}
+	}
+
+	if (!CollisionDetector::detectCollision(gameObjects[carIndex], *player)) {
+		gameObjects[carIndex].setPos(newCarPos);
+	}
+
+}

@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stack> //need this???
 #include <vector>
 #include "Scene.h"
 
@@ -52,15 +51,15 @@ void init() {
 	textures.push_back("apple.bmp");
 	textures.push_back("fabric.bmp");
 	textures.push_back("brick.bmp");
-	textures.push_back("fox.bmp");
 	textures.push_back("building.bmp");
+	textures.push_back("car.bmp");
 	meshes.push_back("cube.obj");
 	meshes.push_back("Apple.obj");
+	meshes.push_back("car2.obj");
 
 	scene = new Scene("phong-tex.vert", "phong-tex.frag", textures, meshes, "yoshi.bmp", "yoshi.md2", "MavenPro-Regular.ttf");
 
 	scene->initSounds();
-	//scene->playBackgroundMusic();
 
 	scene->addGameObject("wall", glm::vec3(10.0f, 3.0f, 109.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("wall2", glm::vec3(10.0f, 3.0f, -89.0f), glm::vec3(100.0f, 4.0f, 1.0f), "brick.bmp", "cube.obj");
@@ -68,6 +67,7 @@ void init() {
 	scene->addGameObject("wall4", glm::vec3(-89.0f, 3.0f, 10.0f), glm::vec3(1.0f, 4.0f, 100.0f), "brick.bmp", "cube.obj");
 	scene->addGameObject("building", glm::vec3(50.0f, 40.1f, 50.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
 	scene->addGameObject("building2", glm::vec3(-45.0f, 40.1f, -45.0f), glm::vec3(40.0f, 40.0f, 40.0f), "building.bmp", "cube.obj");
+	scene->addGameObject("car", glm::vec3(-50.0f, 0.0f, 5.0f), glm::vec3(5.0f, 5.0f, 2.0f), "car.bmp", "car2.obj");
 
 	for (int b = 0; b < 10; b++) {
 		std::string collectableId("collectable");
@@ -95,13 +95,12 @@ void update() {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	scene->updateLight();
 	scene->updateCollectables();
-	//scene->playCollisionAudio();
+	scene->updateCar();
 	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_D]) {
 		if (keys[SDL_SCANCODE_W]) scene->movePlayerForward(0.1f); 
 		if (keys[SDL_SCANCODE_S]) scene->movePlayerForward(-0.1f);
 		if (keys[SDL_SCANCODE_A]) scene->movePlayerRight(-0.1f);
 		if (keys[SDL_SCANCODE_D]) scene->movePlayerRight(0.1f);
-		//if (keys[SDL_SCANCODE_ESCAPE] )
 	}
 	else {
 		scene->idleAnimation();

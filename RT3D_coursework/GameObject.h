@@ -15,35 +15,38 @@ public:
 	GameObject(std::string nName, glm::vec3 nPos, glm::vec3 nScale, GLuint texId, Mesh meshId) {
 		name = nName;
 		pos = nPos;
-		startPos = nPos;
+		lastPos = nPos;
 		scale = nScale;
 		texture = texId;
 		mesh = meshId;
 		lastColl = "";
 		rot = 0.0f;
+		currentAnim = 0;
 	}
 	std::string getName() { return name; }
 	glm::vec3 getPos() { return pos; }
-	void setPos(glm::vec3 nPos) { pos = nPos; }
+	void setPos(glm::vec3 nPos) { lastPos = pos; pos = nPos; }
+	glm::vec3 getLastPos() { return lastPos; }
+	void setLastPos(glm::vec3 nLastPos) { lastPos = nLastPos; }
 	glm::vec3 getScale() { return scale; }
 	GLuint getTexture() { return texture; }
 	Mesh getMesh() { return mesh; }
 	std::string getLastCollision() { return lastColl; }
 	void setLastCollision(std::string lastCollision) { lastColl = lastCollision; }
-	void reset() { pos = startPos; lastColl = ""; }
 	GLfloat getRotation() { return rot; }
 	void setRotation(GLfloat nRot) { rot = nRot; }
 	int getCurrentAnim() { return currentAnim; }
-	int currentAnim = 0;
+	void setCurrentAnim(int anim) { currentAnim = anim; }
 private:
 	GLuint texture;
 	Mesh mesh;
 	glm::vec3 pos;
-	glm::vec3 startPos;
+	glm::vec3 lastPos;
 	glm::vec3 scale; //could add separate scale members for rendering and collision
 	std::string name;
 	std::string lastColl;
 	GLfloat rot;
+	int currentAnim;
 };
 
 #endif

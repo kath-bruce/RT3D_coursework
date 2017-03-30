@@ -32,6 +32,7 @@ public:
 	void playBackgroundMusic();
 	//void playCollisionAudio();
 	bool isGameWon() { return gameWon; }
+	void updateCar();
 private:
 	Renderer * renderer;
 	glm::vec3 eye{0.0f, 1.0f, 4.0f};

@@ -38,42 +38,10 @@ void Renderer::initTTF(char * ttfName) {
 		std::cout << "Failed to open font." << std::endl;
 }
 
-//Renderer::Renderer(char * vertName, char * fragName, char * textureName, char * meshName)
-//{
-//	shaderProg = rt3d::initShaders(vertName, fragName);
-//	skyBoxProg = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
-//
-//	//rt3d::lightStruct light = {
-//	//	{ 0.3f, 0.3f, 0.3f, 1.0f }, // ambient
-//	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // diffuse
-//	//	{ 1.0f, 1.0f, 1.0f, 1.0f }, // specular
-//	//	{ -10.0f, 10.0f, 10.0f, 1.0f }  // position
-//	//};
-//
-//	//rt3d::setLight(shaderProg, light); 
-//
-//	addTexture(textureName);
-//
-//	addMesh(meshName);
-//
-//	loadSkybox();
-//
-//	glm::mat4 modelView(1.0);
-//	mvStack.push(modelView);
-//
-//	//below could be in main
-//	glEnable(GL_BLEND);
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glEnable(GL_DEPTH_TEST); // enable depth testing
-//	//
-//}
-
 void Renderer::loadSkybox() {
 	const char *cubeTexFiles[6] = {
 		"Town-skybox/Town_bk.bmp", "Town-skybox/Town_rt.bmp", "Town-skybox/Town_ft.bmp", "Town-skybox/Town_lf.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
 	};
-	/*GLuint skybox[5];*/
-	//GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
 
 	loadCubeMap(cubeTexFiles, &skybox[0]);
 }
@@ -84,18 +52,14 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 	glm::mat4 projection(1.0);
 	projection = glm::perspective(float(60.0f*DEG_TO_RADIAN), 800.0f / 600.0f, 1.0f, 200.0f);
 
-
 	setCamera(eye, at, up, *player);
 
 	renderSkyBox(projection);
 
-	//glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
-	//rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
-
 	glUseProgram(shaderProg);
 
-	rt3d::setLight(shaderProg, mainLight); // set in scene
-	glm::vec4 temp = mvStack.top() * glm::vec4( 0.0f, 2.0f, -6.0f, 1.0f );
+	rt3d::setLight(shaderProg, mainLight);
+	glm::vec4 temp = mvStack.top() * glm::vec4(0.0f, 2.0f, -6.0f, 1.0f);
 	rt3d::setLightPos(shaderProg, glm::value_ptr(temp));
 
 	rt3d::setUniformMatrix4fv(shaderProg, "projection", glm::value_ptr(projection));
@@ -108,7 +72,7 @@ void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3
 	if (hud.size() > 0)
 	{
 		glUseProgram(textProg);
-		for (HUDObject hudObj: hud)
+		for (HUDObject hudObj : hud)
 			renderHUD(hudObj);
 	}
 }
@@ -191,7 +155,13 @@ void Renderer::renderPlayer(GameObject obj) {
 	mvStack.push(mvStack.top());
 	mvStack.top() = glm::translate(mvStack.top(), obj.getPos());
 	mvStack.top() = glm::scale(mvStack.top(), glm::vec3(obj.getScale().x / 20, obj.getScale().y / 20, obj.getScale().z / 20));
-	mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	if (obj.getCurrentAnim() == 10) {
+		mvStack.top() = glm::rotate(mvStack.top(), (float(180.0f * DEG_TO_RADIAN)), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	else {
+		mvStack.top() = glm::rotate(mvStack.top(), float(-obj.getRotation() * DEG_TO_RADIAN), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
 	mvStack.top() = glm::rotate(mvStack.top(), float(270 * DEG_TO_RADIAN), glm::vec3(1.0f, 0.0f, 0.0f));
 	mvStack.top() = glm::rotate(mvStack.top(), float(90 * DEG_TO_RADIAN), glm::vec3(0.0f, 0.0f, 1.0f));
 	rt3d::setUniformMatrix4fv(shaderProg, "modelview", glm::value_ptr(mvStack.top()));
@@ -231,11 +201,6 @@ void Renderer::addMesh(char * fName)
 			tex_coords.data(), meshIndexCount,
 			indices.data()), meshIndexCount, fName));
 	}
-
-	/*meshes.insert({ fName, std::make_pair(rt3d::createMesh(verts.size() / 3,
-		verts.data(), nullptr, norms.data(),
-		tex_coords.data(), meshIndexCount,
-		indices.data()), meshIndexCount) });*/
 
 }
 
@@ -338,13 +303,6 @@ GLuint Renderer::loadCubeMap(const char * fname[6], GLuint * texID)
 
 void Renderer::renderSkyBox(glm::mat4 projection)
 {
-	//const char *cubeTexFiles[6] = {
-	//	"Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp", "Town-skybox/Town_up.bmp"
-	//};
-	//GLuint skybox[5];
-	////GLuint skyboxProgram = rt3d::initShaders("cubeMap.vert", "cubeMap.frag");
-
-	//loadCubeMap(cubeTexFiles, &skybox[0]);
 
 	// skybox as single cube using cube map
 	glUseProgram(skyBoxProg);

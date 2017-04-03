@@ -122,7 +122,6 @@ void Scene::renderScene()
 bool Scene::checkCollisions() {
 	bool collided = false;
 	for (int i = 0; i < gameObjects.size(); i++) {
-		std::string goName = gameObjects[i].getName();
 		if (CollisionDetector::detectCollision(gameObjects[i], *player)) {
 			collided = true;
 		}
@@ -146,7 +145,7 @@ void Scene::movePlayerForward(GLfloat delta) {
 		checkCollectableCollision();
 	}
 
-	player->setCurrentAnim(1);
+	player->setCurrentAnim(1); //walking anim
 }
 
 void Scene::movePlayerRight(GLfloat delta) {
@@ -160,7 +159,7 @@ void Scene::movePlayerRight(GLfloat delta) {
 		checkCollectableCollision();
 	}
 
-	player->setCurrentAnim(1);
+	player->setCurrentAnim(1); //walking anim
 }
 
 glm::vec3 Scene::moveForward(glm::vec3 pos, GLfloat angle, GLfloat d)
@@ -176,11 +175,13 @@ glm::vec3 Scene::moveRight(glm::vec3 pos, GLfloat angle, GLfloat d)
 void Scene::checkCollectableCollision() {
 	std::string playerColl = player->getLastCollision();
 	if (playerColl.substr(0, 11) == "collectable") {
+
 		std::cout << "player collided with collectable\n";
 		int index = getGameObjectIndex(player->getLastCollision());
 		player->setLastCollision("");
 		gameObjects.erase(gameObjects.begin() + index);
 		collectables--;
+
 		//Audio played on collision
 		HCHANNEL ch = BASS_SampleGetChannel(audio[1], FALSE);
 		BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 10000.0);
@@ -208,10 +209,10 @@ double Scene::getTimeScalar() {
 
 void Scene::idleAnimation() {
 	if (gameWon) {
-		player->setCurrentAnim(10); //yoshi could dance instead - 8
+		player->setCurrentAnim(10); //gameboy animation
 	}
 	else {
-		player->setCurrentAnim(0);
+		player->setCurrentAnim(0); //idle animation
 	}
 
 }
@@ -247,7 +248,7 @@ void Scene::initSounds() {
 }
 
 void Scene::playBackgroundMusic() {
-	HCHANNEL ch = BASS_SampleGetChannel(audio[0], TRUE); //todo true i think??
+	HCHANNEL ch = BASS_SampleGetChannel(audio[0], TRUE);
 	BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, 0.5);
 	if (!BASS_ChannelPlay(ch, TRUE))
 		std::cout << "Can't play sample - " << BASS_ErrorGetCode() << std::endl;
@@ -258,7 +259,7 @@ void Scene::updateCar()
 	int carIndex = getGameObjectIndex("car");
 	glm::vec3 newCarPos = gameObjects[carIndex].getPos();
 
-
+	//car drives between two buildings
 	if ((newCarPos.x - gameObjects[carIndex].getLastPos().x) >= 0) {
 		newCarPos.x += 0.1f;
 

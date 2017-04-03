@@ -6,7 +6,7 @@
 #include <GL/glew.h>
 #include "Mesh.h"
 
-//taken from games tech group project
+//header and cpp based on header and cpp from games tech group project
 
 #define DEG_TO_RADIAN 0.017453293
 

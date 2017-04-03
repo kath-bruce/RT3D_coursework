@@ -17,19 +17,25 @@
 
 #define DEG_TO_RADIAN 0.017453293
 
+//holds textures (bmps) and meshes (md2 and objs)
+//render game objects which have to have textures and meshes already stored in the renderer
+//is used to render a scene
 class Renderer {
 public:
+	//constructor - vert and frag filenames, vectors of textures (bmps) and meshes (objs) and ttf file
+	//vector of meshes can include md2 but leads to odd rendering in player character
 	Renderer(char * vertName, char * fragName, std::vector<char *> textureNames, std::vector<char *> meshNames, char * ttfName);
-	
-	//Renderer(char * vertName, char * fragName, char * textureName, char * meshName);
-	//~Renderer() { delete this; };
-	void render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player, std::vector<HUDObject> hud, rt3d::lightStruct mainLight);
+	void render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player, 
+		std::vector<HUDObject> hud, rt3d::lightStruct mainLight);
+
+	//add texture (bmp) to renderer
 	void addTexture(char * fName);
+
+	//add mesh (obj) to renderer
 	void addMesh(char * fName);
 	GLuint getShader() { return shaderProg; }
 	GLuint getTexture(char * texName);
 	Mesh getMesh(char * meshName);
-	glm::mat4 getStackTop() { return mvStack.top(); }
 private:
 	GLuint shaderProg;
 	GLuint skyBoxProg;

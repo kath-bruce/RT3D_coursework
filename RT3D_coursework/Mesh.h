@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 
+//used for rendering game object meshes
 class Mesh {
 public:
 	Mesh(GLuint mId, GLuint mIndexCount, char * mName) {
@@ -11,8 +12,8 @@ public:
 		meshIndexCount = mIndexCount;
 		meshName = mName;
 	}
-	//~Mesh() { delete this; };
-	Mesh() { meshId = -1; meshIndexCount = -1; meshName = '\0'; } //should never be used
+	//should never be used
+	Mesh() { meshId = -1; meshIndexCount = -1; meshName = '\0'; } 
 	GLuint getMeshId() { return meshId; }
 	GLuint getMeshIndexCount() { return meshIndexCount; }
 	char * getMeshName() { return meshName; }

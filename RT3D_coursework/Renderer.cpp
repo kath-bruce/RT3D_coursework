@@ -21,11 +21,9 @@ Renderer::Renderer(char * vertName, char * fragName, std::vector<char *> texture
 
 	initTTF(ttfName);
 
-	//below could be in main
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST); // enable depth testing
-	//
 }
 
 void Renderer::initTTF(char * ttfName) {
@@ -46,7 +44,8 @@ void Renderer::loadSkybox() {
 	loadCubeMap(cubeTexFiles, &skybox[0]);
 }
 
-void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, GameObject * player, std::vector<HUDObject> hud, rt3d::lightStruct mainLight)
+void Renderer::render(std::vector<GameObject> gameObjs, glm::vec3 eye, glm::vec3 at, glm::vec3 up, 
+	GameObject * player, std::vector<HUDObject> hud, rt3d::lightStruct mainLight)
 {
 	// set up projection matrix
 	glm::mat4 projection(1.0);

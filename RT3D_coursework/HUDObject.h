@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 
+//used for rendering UI
 class HUDObject {
 public:
 	HUDObject(glm::vec3 posN, glm::vec3 scaleN, std::string displayN) {
